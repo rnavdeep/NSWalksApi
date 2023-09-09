@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSWalks.API.CustomActionFilters;
 using NSWalks.API.Models.Domain;
@@ -15,6 +16,7 @@ namespace NSWalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize]
     public class WalksController : Controller
     {
         private readonly IMapper mapper;
