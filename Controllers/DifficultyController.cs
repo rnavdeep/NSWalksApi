@@ -27,10 +27,10 @@ namespace NSWalks.API.Controllers
         // GET: api/values
         [HttpGet]
         public async Task<IActionResult> GetAllDifficulties([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy,
-            [FromQuery] bool? isAscending)
+            [FromQuery] bool? isAscending, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
             //get difficulty domain models from repository which interacts with the database
-            var difficulties = await difficultyRepository.GetAllAsync(filterOn,filterQuery,sortBy,isAscending);
+            var difficulties = await difficultyRepository.GetAllAsync(filterOn,filterQuery,sortBy,isAscending,pageNumber,pageSize);
 
 
             //convert difficult domain model to DTO using mapper

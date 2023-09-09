@@ -48,7 +48,7 @@ namespace NSWalks.API.Repositories
             return deleteDifficulty;
         }
 
-        public async Task<List<Difficulty>> GetAllAsync(string? filterOn= null, string? filterBy = null, string? sortBy = null, bool? isAscending = true)
+        public async Task<List<Difficulty>> GetAllAsync(string? filterOn= null, string? filterBy = null, string? sortBy = null, bool? isAscending = true, int pageNumber = 1, int pageSize = 100)
         {
             //get all difficulties as queryable
             var difficulties = dbContext.Difficulties.AsQueryable();
@@ -73,7 +73,11 @@ namespace NSWalks.API.Repositories
                 }
             }
             #endregion
-            return await difficulties.ToListAsync();
+            #region Pagination
+            var skipResults = (pageNumber - 1) * pageSize;
+
+            #endregion
+            return await difficulties.Skip(skipResults).Take(pageSize).ToListAsync();
         }
 
         public async Task<Difficulty?> GetByCodeAsync(string code)

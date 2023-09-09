@@ -47,7 +47,7 @@ namespace NSWalks.API.Repositories
             return walk;
         }
 
-        public  async Task<List<Walks>> GetAllAsync(string? filterOn = null, string? filterBy = null,string? sortBy = null, bool? isAscending = true)
+        public  async Task<List<Walks>> GetAllAsync(string? filterOn = null, string? filterBy = null,string? sortBy = null, bool? isAscending = true, int pageNumber = 1, int pageSize = 100)
         {
             
             //get walks as queryable
@@ -82,7 +82,11 @@ namespace NSWalks.API.Repositories
                 }
             }
             #endregion
-            return await walks.ToListAsync();
+            #region Pagination
+            var skipResults = (pageNumber - 1) * pageSize;
+
+            #endregion
+            return await walks.Skip(skipResults).Take(pageSize).ToListAsync();
         }
 
         public async Task<Walks?> GetByWalkNumberAsync(string code)

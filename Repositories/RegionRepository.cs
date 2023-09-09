@@ -14,7 +14,7 @@ namespace NSWalks.API.Repositories
             this.dbContext = dbContext;
 		}
 
-        public async Task<List<Region>> GetAllAsync(string? filterOn = null, string? filterBy =null, string? sortBy= null, bool? isAscending = true)
+        public async Task<List<Region>> GetAllAsync(string? filterOn = null, string? filterBy =null, string? sortBy= null, bool? isAscending = true, int pageNumber = 1, int pageSize = 100)
         {
             //get all regions as queryable
             var regions = dbContext.Regions.AsQueryable();
@@ -39,7 +39,11 @@ namespace NSWalks.API.Repositories
                 }
             }
             #endregion
-            return await regions.ToListAsync();
+            #region Pagination
+            var skipResults = (pageNumber - 1) * pageSize;
+
+            #endregion
+            return await regions.Skip(skipResults).Take(pageSize).ToListAsync();
         }
 
         public async Task<Region?> GetByCodeAsync(string code)
