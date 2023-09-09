@@ -48,11 +48,11 @@ namespace NSWalks.API.Repositories
             return deleteDifficulty;
         }
 
-        public async Task<List<Difficulty>> GetAllAsync(string? filterOn, string? filterBy)
+        public async Task<List<Difficulty>> GetAllAsync(string? filterOn= null, string? filterBy = null, string? sortBy = null, bool? isAscending = true)
         {
             //get all difficulties as queryable
             var difficulties = dbContext.Difficulties.AsQueryable();
-
+            #region Filtering
             //apply filter on queryable
             if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterBy) == false)
             {
@@ -62,6 +62,17 @@ namespace NSWalks.API.Repositories
                     difficulties = difficulties.Where(diff => diff.Name.Contains(filterBy));
                 }
             }
+            #endregion
+            #region Sorting
+            if (string.IsNullOrWhiteSpace(sortBy) == false && isAscending!=null)
+            {
+                //current business rule to allow sort on Name 
+                if (sortBy.ToUpper().Equals(nameof(Difficulty.Name).ToUpper()))
+                {
+                    difficulties = (bool)isAscending ? difficulties.OrderBy(diff => diff.Name) : difficulties.OrderByDescending(diff => diff.Name);
+                }
+            }
+            #endregion
             return await difficulties.ToListAsync();
         }
 

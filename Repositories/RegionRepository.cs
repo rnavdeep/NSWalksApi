@@ -14,11 +14,11 @@ namespace NSWalks.API.Repositories
             this.dbContext = dbContext;
 		}
 
-        public async Task<List<Region>> GetAllAsync(string? filterOn, string? filterBy)
+        public async Task<List<Region>> GetAllAsync(string? filterOn = null, string? filterBy =null, string? sortBy= null, bool? isAscending = true)
         {
             //get all regions as queryable
             var regions = dbContext.Regions.AsQueryable();
-
+            #region Filtering
             //apply filter on queryable
             if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterBy) == false)
             {
@@ -28,6 +28,17 @@ namespace NSWalks.API.Repositories
                     regions = regions.Where(reg => reg.Name.Contains(filterBy));
                 }
             }
+            #endregion
+            #region Sorting
+            if (string.IsNullOrWhiteSpace(sortBy) == false && isAscending!=null)
+            {
+                //current business rule to allow filter on Name 
+                if (sortBy.ToUpper().Equals(nameof(Region.Name).ToUpper()))
+                {
+                    regions =(bool)isAscending? regions.OrderBy(reg => reg.Name):regions.OrderBy(reg=>reg.Name);
+                }
+            }
+            #endregion
             return await regions.ToListAsync();
         }
 

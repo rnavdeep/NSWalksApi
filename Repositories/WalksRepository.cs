@@ -47,14 +47,15 @@ namespace NSWalks.API.Repositories
             return walk;
         }
 
-        public  async Task<List<Walks>> GetAllAsync(string? filterOn, string? filterBy)
+        public  async Task<List<Walks>> GetAllAsync(string? filterOn = null, string? filterBy = null,string? sortBy = null, bool? isAscending = true)
         {
-            //apply filter if available
+            
             //get walks as queryable
             var walks = dbContext.Walks.Include(x => x.Difficulty).Include(x => x.Region).AsQueryable();
 
+            #region Filtering
             //apply filter on queryable
-            if(string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterBy) == false)
+            if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterBy) == false)
             {
                 //current business rule to allow filter on Name and Description
                 if (filterOn.ToUpper().Equals(nameof(Walks.Name).ToUpper()))
@@ -66,6 +67,21 @@ namespace NSWalks.API.Repositories
                     walks = walks.Where(walk => walk.Description.Contains(filterBy));
                 }
             }
+            #endregion
+
+            #region Sorting
+            if(string.IsNullOrWhiteSpace(sortBy) == false && isAscending != null)
+            {
+                //current business rule to allow Sorting on Name && length
+                if (sortBy.ToUpper().Equals(nameof(Walks.Name).ToUpper()))
+                {
+                    walks = (bool)isAscending ? walks.OrderBy(walk => walk.Name) : walks.OrderByDescending(walk => walk.Name);
+                }else if (sortBy.ToUpper().Equals(nameof(Walks.LengthKms).ToUpper()))
+                {
+                    walks = (bool)isAscending ? walks.OrderBy(walk => walk.LengthKms) : walks.OrderByDescending(walk => walk.LengthKms);
+                }
+            }
+            #endregion
             return await walks.ToListAsync();
         }
 

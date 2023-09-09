@@ -32,10 +32,11 @@ namespace NSWalks.API.Controllers
 
         // GET: api/values
         [HttpGet]
-        public async Task<IActionResult> GetAllRegions([FromQuery] string? filterOn, [FromQuery] string? filterQuery)
+        public async Task<IActionResult> GetAllRegions([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy,
+            [FromQuery] bool? isAscending)
         {
             //get data from db Domain Models
-            var regions = await regionRepository.GetAllAsync(filterOn,filterQuery);
+            var regions = await regionRepository.GetAllAsync(filterOn,filterQuery,sortBy,isAscending);
 
             // map domain models to dtos using automapper 
             var regionsDto = mapper.Map<List<RegionDto>>(regions);

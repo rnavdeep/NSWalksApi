@@ -5,7 +5,7 @@ namespace NSWalks.API.Repositories
 {
 	public interface IRegionRepository
 	{
-		Task<List<Region>> GetAllAsync(string? filterOn, string? filterBy);
+		Task<List<Region>> GetAllAsync(string? filterOn, string? filterBy, string? sortBy, bool? isAscending = true);
 
 		Task<Region?> GetByCodeAsync(string code);
 

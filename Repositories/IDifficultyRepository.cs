@@ -5,7 +5,7 @@ namespace NSWalks.API.Repositories
 {
 	public interface IDifficultyRepository
     {
-        Task<List<Difficulty>> GetAllAsync(string? filterOn, string? filterBy);
+        Task<List<Difficulty>> GetAllAsync(string? filterOn, string? filterBy, string? sortBy, bool? isAscending = true);
 
         Task<Difficulty?> GetByCodeAsync(string code);
 
