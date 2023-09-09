@@ -25,12 +25,15 @@ namespace NSWalks.API.Controllers
             this.mapper = mapper;
             this.walksRepository = walksRepository;
         }
-        // GET: api/values
+        // GET: api/walks?filterOn=ColumnName&filterQuery=Track&sortBy=Name&isAscending=true&pageNumber = 1 & pageSize = 10
+        //filtering, sorting, pagination
+        //passed as query parameters
         [HttpGet]
-        public async Task<IActionResult> GetAllWalks()
+        public async Task<IActionResult> GetAllWalks([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy,
+            [FromQuery] bool? isAscending, [FromQuery]int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
             //call the repository class which returns list of domain models
-            var walksDomainModel = await walksRepository.GetAllAsync();
+            var walksDomainModel = await walksRepository.GetAllAsync(filterOn,filterQuery,sortBy,isAscending,pageNumber,pageSize);
 
             //conver the list of domain models to dtos
             var walksDto = mapper.Map<List<WalkDto>>(walksDomainModel);

@@ -47,9 +47,46 @@ namespace NSWalks.API.Repositories
             return walk;
         }
 
-        public  async Task<List<Walks>> GetAllAsync()
+        public  async Task<List<Walks>> GetAllAsync(string? filterOn = null, string? filterBy = null,string? sortBy = null, bool? isAscending = true, int pageNumber = 1, int pageSize = 100)
         {
-            return await dbContext.Walks.Include(x => x.Difficulty).Include(x => x.Region).ToListAsync();
+            
+            //get walks as queryable
+            var walks = dbContext.Walks.Include(x => x.Difficulty).Include(x => x.Region).AsQueryable();
+
+            #region Filtering
+            //apply filter on queryable
+            if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterBy) == false)
+            {
+                //current business rule to allow filter on Name and Description
+                if (filterOn.ToUpper().Equals(nameof(Walks.Name).ToUpper()))
+                {
+                    walks = walks.Where(walk => walk.Name.Contains(filterBy));
+                }
+                else if (filterOn.ToUpper().Equals(nameof(Walks.Description).ToUpper()))
+                {
+                    walks = walks.Where(walk => walk.Description.Contains(filterBy));
+                }
+            }
+            #endregion
+
+            #region Sorting
+            if(string.IsNullOrWhiteSpace(sortBy) == false && isAscending != null)
+            {
+                //current business rule to allow Sorting on Name && length
+                if (sortBy.ToUpper().Equals(nameof(Walks.Name).ToUpper()))
+                {
+                    walks = (bool)isAscending ? walks.OrderBy(walk => walk.Name) : walks.OrderByDescending(walk => walk.Name);
+                }else if (sortBy.ToUpper().Equals(nameof(Walks.LengthKms).ToUpper()))
+                {
+                    walks = (bool)isAscending ? walks.OrderBy(walk => walk.LengthKms) : walks.OrderByDescending(walk => walk.LengthKms);
+                }
+            }
+            #endregion
+            #region Pagination
+            var skipResults = (pageNumber - 1) * pageSize;
+
+            #endregion
+            return await walks.Skip(skipResults).Take(pageSize).ToListAsync();
         }
 
         public async Task<Walks?> GetByWalkNumberAsync(string code)
