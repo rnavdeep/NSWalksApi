@@ -48,9 +48,21 @@ namespace NSWalks.API.Repositories
             return deleteDifficulty;
         }
 
-        public async Task<List<Difficulty>> GetAllAsync()
+        public async Task<List<Difficulty>> GetAllAsync(string? filterOn, string? filterBy)
         {
-            return await dbContext.Difficulties.ToListAsync();
+            //get all difficulties as queryable
+            var difficulties = dbContext.Difficulties.AsQueryable();
+
+            //apply filter on queryable
+            if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterBy) == false)
+            {
+                //current business rule to allow filter on Name 
+                if (filterOn.ToUpper().Equals(nameof(Difficulty.Name).ToUpper()))
+                {
+                    difficulties = difficulties.Where(diff => diff.Name.Contains(filterBy));
+                }
+            }
+            return await difficulties.ToListAsync();
         }
 
         public async Task<Difficulty?> GetByCodeAsync(string code)

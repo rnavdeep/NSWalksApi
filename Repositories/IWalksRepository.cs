@@ -5,7 +5,7 @@ namespace NSWalks.API.Repositories
 {
 	public interface IWalksRepository
 	{
-        Task<List<Walks>> GetAllAsync();
+        Task<List<Walks>> GetAllAsync(string? filterOn, string? filterBy);
 
         Task<Walks?> GetByWalkNumberAsync(string code);
 

@@ -47,9 +47,26 @@ namespace NSWalks.API.Repositories
             return walk;
         }
 
-        public  async Task<List<Walks>> GetAllAsync()
+        public  async Task<List<Walks>> GetAllAsync(string? filterOn, string? filterBy)
         {
-            return await dbContext.Walks.Include(x => x.Difficulty).Include(x => x.Region).ToListAsync();
+            //apply filter if available
+            //get walks as queryable
+            var walks = dbContext.Walks.Include(x => x.Difficulty).Include(x => x.Region).AsQueryable();
+
+            //apply filter on queryable
+            if(string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterBy) == false)
+            {
+                //current business rule to allow filter on Name and Description
+                if (filterOn.ToUpper().Equals(nameof(Walks.Name).ToUpper()))
+                {
+                    walks = walks.Where(walk => walk.Name.Contains(filterBy));
+                }
+                else if (filterOn.ToUpper().Equals(nameof(Walks.Description).ToUpper()))
+                {
+                    walks = walks.Where(walk => walk.Description.Contains(filterBy));
+                }
+            }
+            return await walks.ToListAsync();
         }
 
         public async Task<Walks?> GetByWalkNumberAsync(string code)

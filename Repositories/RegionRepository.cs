@@ -14,9 +14,21 @@ namespace NSWalks.API.Repositories
             this.dbContext = dbContext;
 		}
 
-        public async Task<List<Region>> GetAllAsync()
+        public async Task<List<Region>> GetAllAsync(string? filterOn, string? filterBy)
         {
-            return await dbContext.Regions.ToListAsync();
+            //get all regions as queryable
+            var regions = dbContext.Regions.AsQueryable();
+
+            //apply filter on queryable
+            if (string.IsNullOrWhiteSpace(filterOn) == false && string.IsNullOrWhiteSpace(filterBy) == false)
+            {
+                //current business rule to allow filter on Name 
+                if (filterOn.ToUpper().Equals(nameof(Region.Name).ToUpper()))
+                {
+                    regions = regions.Where(reg => reg.Name.Contains(filterBy));
+                }
+            }
+            return await regions.ToListAsync();
         }
 
         public async Task<Region?> GetByCodeAsync(string code)
