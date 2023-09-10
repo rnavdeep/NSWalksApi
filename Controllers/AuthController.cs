@@ -62,6 +62,26 @@ namespace NSWalks.API.Controllers
             return BadRequest("Something went wrong");
         }
 
+        //POST /api/Auth/Login
+        [HttpPost]
+        [Route("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto loginRequestDto)
+        {
+            var user = await userManager.FindByEmailAsync(loginRequestDto.Username);
+            if (user != null)
+            {
+                var isPasswordCorrect = await userManager.CheckPasswordAsync(user, loginRequestDto.Password);
+                if ( isPasswordCorrect == true)
+                {
+                    //Create JWT token to use for Endpoint calls
+
+                    return Ok("Login Success");
+                }
+            }
+            return BadRequest("Username or Password Incorrect");
+        }
+
+
         // PUT api/values/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
