@@ -40,7 +40,7 @@
     "NSWalks.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "applicationUrl": "https://localhost:28924;http://localhost:54657",
+      "applicationUrl": "https://localhost:16174;http://localhost:48152",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
