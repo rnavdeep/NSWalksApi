@@ -20,7 +20,6 @@ namespace NSWalks.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize]
     public class RegionsController : Controller
     {
         private readonly IRegionRepository regionRepository;
@@ -34,6 +33,7 @@ namespace NSWalks.API.Controllers
 
         // GET: api/values
         [HttpGet]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetAllRegions([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy,
             [FromQuery] bool? isAscending, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
@@ -50,6 +50,7 @@ namespace NSWalks.API.Controllers
 
         // GET api/values/5
         [HttpGet("{code}")]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetRegionByCode(string code)
         {
             // get region domain model from db
@@ -67,6 +68,7 @@ namespace NSWalks.API.Controllers
         // POST api/values
         [HttpPost]
         [ValidateModelAtrribute]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Create([FromBody]AddRegionRequestDto addRegionRequestDto)
         {
             // convert DTO to domain model for db
@@ -103,6 +105,7 @@ namespace NSWalks.API.Controllers
         // PUT api/values/5
         [HttpPut("{code}")]
         [ValidateModelAtrribute]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> UpdateRegionByCode([FromRoute] string code, [FromBody] UpdateRegionRequestDto updateRegionRequest)
         {
             //map dto to domain model if it exists
@@ -122,6 +125,7 @@ namespace NSWalks.API.Controllers
         }
         // DELETE api/values/5
         [HttpDelete("{code}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> Delete(string code)
         {
             var region = await regionRepository.DeleteAsync(code);

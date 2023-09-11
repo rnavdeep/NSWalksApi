@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using NSWalks.API.Models.DTO;
+using NSWalks.API.Repositories;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -15,25 +16,13 @@ namespace NSWalks.API.Controllers
     public class AuthController : Controller
     {
         private readonly UserManager<IdentityUser> userManager;
+        private readonly ITokenRepository tokenRepository;
 
-        public AuthController(UserManager<IdentityUser> userManager)
+        public AuthController(UserManager<IdentityUser> userManager, ITokenRepository tokenRepository)
         {
             this.userManager = userManager;
+            this.tokenRepository = tokenRepository;
         }
-        // GET: api/values
-        [HttpGet]
-        public IEnumerable<string> Get()
-        {
-            return new string[] { "value1", "value2" };
-        }
-
-        // GET api/values/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
-        }
-
         // POST api/Auth/Register
         [HttpPost]
         [Route("Register")]
@@ -73,7 +62,19 @@ namespace NSWalks.API.Controllers
                 var isPasswordCorrect = await userManager.CheckPasswordAsync(user, loginRequestDto.Password);
                 if ( isPasswordCorrect == true)
                 {
-                    //Create JWT token to use for Endpoint calls
+
+                    var roles = await userManager.GetRolesAsync(user);
+                    if (roles != null)
+                    {
+                        //Create JWT token to use for Endpoint calls
+                        var jwtToken = tokenRepository.CreateJwtToken(user, roles.ToArray());
+                        var response = new LoginResponseDto
+                        {
+                            JwtToken = jwtToken
+                        };
+                        return Ok(response);
+
+                    }
 
                     return Ok("Login Success");
                 }
@@ -85,12 +86,6 @@ namespace NSWalks.API.Controllers
         // PUT api/values/5
         [HttpPut("{id}")]
         public void Put(int id, [FromBody]string value)
-        {
-        }
-
-        // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
         {
         }
     }
