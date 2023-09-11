@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSWalks.API.CustomActionFilters;
 using NSWalks.API.Models.Domain;
@@ -29,6 +30,7 @@ namespace NSWalks.API.Controllers
         //filtering, sorting, pagination
         //passed as query parameters
         [HttpGet]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetAllWalks([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy,
             [FromQuery] bool? isAscending, [FromQuery]int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
@@ -43,6 +45,7 @@ namespace NSWalks.API.Controllers
 
         // GET api/values/5
         [HttpGet("{code}")]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> Get(string code)
         {
             //call the repository to get domain model of the walk if found
@@ -61,6 +64,7 @@ namespace NSWalks.API.Controllers
         // POST api/values
         [HttpPost]
         [ValidateModelAtrribute]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> CreateWalk([FromBody]AddWalkRequestDto addWalkRequestDto)
         {
             //convert dto to domain model using mapper
@@ -78,6 +82,7 @@ namespace NSWalks.API.Controllers
         // PUT api/values/5
         [HttpPut("{code}")]
         [ValidateModelAtrribute]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> UpdateWalk(string code, [FromBody]UpdateWalkRequestDto updateWalkRequestDto)
         {
             //convert dto to domain model
@@ -97,6 +102,7 @@ namespace NSWalks.API.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{code}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> RemoveWalk(string code)
         {
             //call repository

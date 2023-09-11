@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NSWalks.API.CustomActionFilters;
 using NSWalks.API.Models.Domain;
@@ -26,6 +27,7 @@ namespace NSWalks.API.Controllers
         }
         // GET: api/values
         [HttpGet]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetAllDifficulties([FromQuery] string? filterOn, [FromQuery] string? filterQuery, [FromQuery] string? sortBy,
             [FromQuery] bool? isAscending, [FromQuery] int pageNumber = 1, [FromQuery] int pageSize = 100)
         {
@@ -42,6 +44,7 @@ namespace NSWalks.API.Controllers
 
         // GET api/values/5
         [HttpGet("{code}")]
+        [Authorize(Roles = "Reader,Writer")]
         public async Task<IActionResult> GetDifficultyByCode(string code)
         {
             //get the domain model from db using repository
@@ -62,6 +65,7 @@ namespace NSWalks.API.Controllers
         // POST api/values
         [HttpPost]
         [ValidateModelAtrribute]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> AddDifficulty([FromBody]DifficultyDto difficultyDto)
         {
 
@@ -100,6 +104,7 @@ namespace NSWalks.API.Controllers
         // PUT api/values/5
         [HttpPut("{code}")]
         [ValidateModelAtrribute]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> UpdateDiffcultyByCode(string code, [FromBody]UpdateDifficultDto updateDifficultDto)
         {
                 //convert update dto to domain model for repository
@@ -125,6 +130,7 @@ namespace NSWalks.API.Controllers
 
         // DELETE api/values/5
         [HttpDelete("{code}")]
+        [Authorize(Roles = "Writer")]
         public async Task<IActionResult> DeleteDiffculity(string code)
         {
             //see the deleted domain model
