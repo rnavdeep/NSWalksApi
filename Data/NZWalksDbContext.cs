@@ -17,6 +17,8 @@ namespace NSWalks.API.Data
 
 		public DbSet<Walks> Walks { get; set; }
 
+		public DbSet<WalkImage> WalkImages { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -32,6 +34,12 @@ namespace NSWalks.API.Data
                 .WithOne(e => e.Region)
                 .HasForeignKey(e => e.RegionId)
                 .IsRequired(true);
+
+			modelBuilder.Entity<Walks>()
+				.HasMany(e => e.Images)
+				.WithOne(e => e.Walk)
+				.HasForeignKey(e => e.WalkId)
+				.IsRequired(true);
         }
     }
 }

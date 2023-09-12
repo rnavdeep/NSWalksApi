@@ -30,6 +30,9 @@ namespace NSWalks.API.Models.Domain
         public Guid RegionId { get; set; }
         public Guid DifficultyId { get; set; }
 
+		//multiple images
+		public ICollection<WalkImage>? Images { get; set; }
+
         //Navigation properties: define relationships between two domain classes using navigation properties
         public Difficulty Difficulty { get; set; }
 		public Region Region { get; set; }
