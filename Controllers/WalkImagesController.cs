@@ -28,7 +28,7 @@ namespace NSWalks.API.Controllers
         // POST api/WalkImages/Upload
         [HttpPost]
         [Route("Upload")]
-        [Authorize(Roles = "Writer")]
+        [Authorize(Roles = ("Writer"))]
         public async Task<IActionResult> Upload([FromForm] UploadWalkImagesRequestDto uploadWalkImagesRequestDto)
         {
             ValidateFileUpload(uploadWalkImagesRequestDto);
@@ -59,15 +59,18 @@ namespace NSWalks.API.Controllers
             }
             return BadRequest(ModelState);
         }
-
-        private void ValidateFileUpload(UploadWalkImagesRequestDto uploadWalkImagesRequestDto)
+        private void CheckExtension(string fileName)
         {
             var allowedExtension = new string[] { ".jpg", ".jpeg", ".png" };
             //check extensions
-            if (allowedExtension.Contains(Path.GetExtension(uploadWalkImagesRequestDto.File.FileName)) == false)
+            if (allowedExtension.Contains(Path.GetExtension(fileName)) == false)
             {
                 ModelState.AddModelError("File", "Unsupported Image Type");
             }
+        }
+        private void ValidateFileUpload(UploadWalkImagesRequestDto uploadWalkImagesRequestDto)
+        {
+            CheckExtension(uploadWalkImagesRequestDto.File.FileName);
             //check filesize
             if (uploadWalkImagesRequestDto.File.Length > 10485760)
             {
@@ -75,10 +78,25 @@ namespace NSWalks.API.Controllers
             }
 
         }
+
         // DELETE api/values/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("{name}")]
+        [Authorize(Roles =("Writer"))]
+        public async Task<IActionResult> Delete([FromForm] string name)
         {
+            CheckExtension(name);
+            if (ModelState.IsValid)
+            {
+                var walkImageDomain = await imagesRepository.Delete(name);
+                if (walkImageDomain != null)
+                {
+
+                    var responseImage = mapper.Map<UploadWalkImagesResponseDto>(walkImageDomain);
+                    return Ok(responseImage);
+                }
+            }
+            return BadRequest(ModelState);
+
         }
     }
 }
