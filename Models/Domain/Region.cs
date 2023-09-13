@@ -16,9 +16,10 @@ namespace NSWalks.API.Models.Domain
 		public string Code { get; set; }
 		public string Name { get; set; }
 		public string? RegionImageUrl { get; set; }
-
-		//Navigation properties
-		public ICollection<Walks> Walks { get; } = new List<Walks>();
+        //multiple images
+        public ICollection<RegionImage>? Images { get; set; }
+        //Navigation properties
+        public ICollection<Walks> Walks { get; } = new List<Walks>();
 	}
 }
 
