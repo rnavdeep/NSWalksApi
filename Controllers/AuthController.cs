@@ -18,7 +18,7 @@ namespace NSWalks.API.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly ITokenRepository tokenRepository;
 
-        public AuthController(UserManager<IdentityUser> userManager, ITokenRepository tokenRepository)
+        public AuthController(UserManager<IdentityUser> userManager, ITokenRepositoryl tokenRepository)
         {
             this.userManager = userManager;
             this.tokenRepository = tokenRepository;
