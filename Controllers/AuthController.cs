@@ -18,7 +18,7 @@ namespace NSWalks.API.Controllers
         private readonly UserManager<IdentityUser> userManager;
         private readonly ITokenRepository tokenRepository;
 
-        public AuthController(UserManager<IdentityUser> userManager, ITokenRepositoryl tokenRepository)
+        public AuthController(UserManager<IdentityUser> userManager, ITokenRepository tokenRepository)
         {
             this.userManager = userManager;
             this.tokenRepository = tokenRepository;
@@ -26,7 +26,7 @@ namespace NSWalks.API.Controllers
         // POST api/Auth/Register
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody]RegisterRequestDtoh registerRequestDto)
+        public async Task<IActionResult> Register([FromBody]RegisterRequestDto registerRequestDto)
         {
             var identityUser = new IdentityUser
             {
