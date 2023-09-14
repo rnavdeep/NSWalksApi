@@ -26,7 +26,7 @@ namespace NSWalks.API.Controllers
         // POST api/Auth/Register
         [HttpPost]
         [Route("Register")]
-        public async Task<IActionResult> Register([FromBody]RegisterRequestDtoh registerRequestDto)
+        public async Task<IActionResult> Register([FromBody]RegisterRequestDto registerRequestDto)
         {
             var identityUser = new IdentityUser
             {
