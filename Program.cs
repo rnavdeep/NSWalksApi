@@ -8,10 +8,21 @@ using NSWalks.API.Mappings;
 using NSWalks.API.Repositories;
 using Microsoft.OpenApi.Models;
 using Microsoft.Extensions.FileProviders;
+using Serilog;
+using NSWalks.API.Middlewares;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+//file over a new day, create new file
+//write logs to console with minimum level of information
+var logger = new LoggerConfiguration()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/NSWalks_Log.txt",rollingInterval:RollingInterval.Day)
+    .MinimumLevel.Information().CreateLogger();
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
+
 
 builder.Services.AddControllers();
 builder.Services.AddHttpContextAccessor();
@@ -20,7 +31,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
 {
-    options.SwaggerDoc("v1", new OpenApiInfo { Title = "NZ Walks Api", Version = "v1" });
+    options.SwaggerDoc("v1", new OpenApiInfo { Title = "NZWalksApi", Version = "v1" });
     options.AddSecurityDefinition(JwtBearerDefaults.AuthenticationScheme, new OpenApiSecurityScheme
     {
         Name = "Authorization",
@@ -60,7 +71,7 @@ builder.Services.AddScoped<IRegionRepository, RegionRepository>();
 builder.Services.AddScoped<IDifficultyRepository, DifficultyRepository>();
 builder.Services.AddScoped<IWalksRepository, WalksRepository>();
 builder.Services.AddScoped<ITokenRepository, TokenRepository>();
-builder.Services.AddScoped<IWalkImagesRepository, WalkImagesRepository>();
+builder.Services.AddScoped<IImagesRepository, ImagesRepository>();
 
 builder.Services.AddAutoMapper(typeof(AutomapperProfiles));
 
@@ -97,16 +108,26 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    
 }
-
+app.UseMiddleware<ExceptionHandlerMiddleware>();
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+//WalkImages Configuration
 app.UseStaticFiles(new StaticFileOptions
 {
     FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(),"Images/WalkImages")),
     RequestPath = "/Images/WalkImages"
+});
+//RegionImages configuration
+
+// Configure the second set of static files
+app.UseStaticFiles(new StaticFileOptions
+{
+    FileProvider = new PhysicalFileProvider(Path.Combine(Directory.GetCurrentDirectory(), "Images/RegionImages")),
+    RequestPath = "/Images/RegionImages"
 });
 app.MapControllers();
 
